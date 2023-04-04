@@ -15,11 +15,23 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView # generic view, allows you to do without the view
 import authentication.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', authentication.views.login_page, name="login"),
+    # path('', LoginView.as_view(
+    #     template_name="authentication/login.html",
+    #     redirect_authenticated_user=True
+    # ), name="login"), # generic view, allows you to do without the view
+    # path('logout/', LogoutView.as_view(), name="logout"), # generic view, allows you to do without the view
+    path('change-password/', PasswordChangeView.as_view(
+        template_name="authentication/change_password.html",
+    ), name="password_change"), # generic view, allows you to do without the view
+    path('change-password-done/', PasswordChangeDoneView.as_view(
+        template_name="authentication/change_password_done.html",
+    ), name="password_change_done"), # generic view, allows you to do without the view
+    path('', authentication.views.LoginPageView.as_view(), name="login"),
     path('logout/', authentication.views.logout_user, name="logout"),
     path('home/', authentication.views.home, name="home")
 ]
