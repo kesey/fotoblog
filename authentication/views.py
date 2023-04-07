@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required # restrict access to a
 # from django.contrib.auth.mixins import LoginRequiredMixin # restrict access to authenticate users
 from django.views.generic import View
 from authentication import forms
+from django.conf import settings
 
 class LoginPageView(View): # class LoginPageView(View, LoginRequiredMixin): restrict access to authenticate users 
     template_name = "authentication/login.html"
@@ -11,11 +12,10 @@ class LoginPageView(View): # class LoginPageView(View, LoginRequiredMixin): rest
 
     def get(self, request):
         form = self.form_class()
-        message = ""
         return render(
             request,
             self.template_name,
-            context={"form": form, "message": message}
+            context={"form": form}
         )
 
     def post(self, request):
@@ -45,3 +45,29 @@ def home(request):
 def logout_user(request):
     logout(request)
     return redirect("login")
+
+class SignupPageView(View):
+    template_name = "authentication/signup.html"
+    form_class = forms.SignupForm
+
+    def get(self, request):
+        form = self.form_class()
+        return render(
+            request,
+            self.template_name,
+            context={"form": form}
+        )
+    
+    def post(self, request):
+        form = self.form_class(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect(settings.LOGIN_REDIRECT_URL)
+        return render(
+            request,
+            self.template_name,
+            context={"form": form}
+        )
+
+

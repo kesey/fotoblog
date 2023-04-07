@@ -20,6 +20,7 @@ import authentication.views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('signup/', authentication.views.SignupPageView.as_view(), name="signup"),
     # path('', LoginView.as_view(
     #     template_name="authentication/login.html",
     #     redirect_authenticated_user=True

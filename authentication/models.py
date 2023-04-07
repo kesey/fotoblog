@@ -9,7 +9,7 @@ class User(AbstractUser):
     # email = models.EmailField(unique=True)
     # username = None
 
-    # USERNAME_FIELD = 'email' # use email field for user name (add to be unique)
+    # USERNAME_FIELD = 'email' # use email field for username (add to be unique)
     CREATOR = 'CREATOR'
     SUBSCRIBER = 'SUBSCRIBER'
 
