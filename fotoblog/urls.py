@@ -38,6 +38,7 @@ urlpatterns = [
     path('change-password-done/', PasswordChangeDoneView.as_view(
         template_name="authentication/change_password_done.html",
     ), name="password_change_done"), # generic view, allows you to do without the view
+    path('profile-photo/upload/', authentication.views.UploadProfilePhotoPageView.as_view(), name="upload_profile_photo"),
     path('home/', blog.views.home, name="home"),
     path('photo/upload/', blog.views.PhotoUploadPageView.as_view(), name="photo_upload")
 ]

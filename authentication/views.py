@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required # restrict access to authenticate users use it only with def view
-# from django.contrib.auth.mixins import LoginRequiredMixin # restrict access to authenticate users use it only with class view
+from django.contrib.auth.mixins import LoginRequiredMixin # restrict access to authenticate users use it only with class view
 from django.views.generic import View
 from authentication import forms
 from django.conf import settings
@@ -65,4 +65,26 @@ class SignupPageView(View):
             self.template_name,
             context={"form": form}
         )
+    
+class UploadProfilePhotoPageView(View, LoginRequiredMixin):
+    template_name = "authentication/upload_profile_photo.html"
+    form_class = forms.UploadProfilePhotoForm
 
+    def get(self, request):
+        form = self.form_class(instance=request.user)
+        return render(
+            request,
+            self.template_name,
+            context={"form": form}
+        )
+
+    def post(self, request):
+        form = self.form_class(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+        return render(
+            request,
+            self.template_name,
+            context={"form": form}
+        )
