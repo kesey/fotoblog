@@ -17,10 +17,16 @@ from django.contrib import admin
 from django.urls import path
 from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView # generic view, allows you to do without the view
 import authentication.views
+import blog.views
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('signup/', authentication.views.SignupPageView.as_view(), name="signup"),
+    path('', authentication.views.LoginPageView.as_view(), name="login"),
+    path('logout/', authentication.views.logout_user, name="logout"),
     # path('', LoginView.as_view(
     #     template_name="authentication/login.html",
     #     redirect_authenticated_user=True
@@ -32,7 +38,9 @@ urlpatterns = [
     path('change-password-done/', PasswordChangeDoneView.as_view(
         template_name="authentication/change_password_done.html",
     ), name="password_change_done"), # generic view, allows you to do without the view
-    path('', authentication.views.LoginPageView.as_view(), name="login"),
-    path('logout/', authentication.views.logout_user, name="logout"),
-    path('home/', authentication.views.home, name="home")
+    path('home/', blog.views.home, name="home"),
+    path('photo/upload/', blog.views.PhotoUploadPageView.as_view(), name="photo_upload")
 ]
+
+if settings.DEBUG: # serve media in dev environnement (don't use this in production)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

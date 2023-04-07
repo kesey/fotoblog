@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.decorators import login_required # restrict access to authenticate users
-# from django.contrib.auth.mixins import LoginRequiredMixin # restrict access to authenticate users
+from django.contrib.auth.decorators import login_required # restrict access to authenticate users use it only with def view
+# from django.contrib.auth.mixins import LoginRequiredMixin # restrict access to authenticate users use it only with class view
 from django.views.generic import View
 from authentication import forms
 from django.conf import settings
 
-class LoginPageView(View): # class LoginPageView(View, LoginRequiredMixin): restrict access to authenticate users 
+class LoginPageView(View): # class LoginPageView(View, LoginRequiredMixin): restrict access to authenticate users in class view
     template_name = "authentication/login.html"
     form_class = forms.LogInForm
 
@@ -37,11 +37,7 @@ class LoginPageView(View): # class LoginPageView(View, LoginRequiredMixin): rest
             context={"form": formu, "message": message}
         )
 
-
-@login_required # restrict access to authenticate users
-def home(request):
-    return render(request, "blog/home.html")
-
+@login_required # works only with def view
 def logout_user(request):
     logout(request)
     return redirect("login")
@@ -69,5 +65,4 @@ class SignupPageView(View):
             self.template_name,
             context={"form": form}
         )
-
 
