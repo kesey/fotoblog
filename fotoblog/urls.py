@@ -40,7 +40,9 @@ urlpatterns = [
     ), name="password_change_done"), # generic view, allows you to do without the view
     path('profile-photo/upload/', authentication.views.UploadProfilePhotoPageView.as_view(), name="upload_profile_photo"),
     path('home/', blog.views.home, name="home"),
-    path('photo/upload/', blog.views.PhotoUploadPageView.as_view(), name="photo_upload")
+    path('photo/upload/', blog.views.PhotoUploadPageView.as_view(), name="photo_upload"),
+    path('blog/create/', blog.views.BlogAndPhotoUploadPageView.as_view(), name="blog_create"),
+    path('blog/<int:blog_id>', blog.views.view_blog, name="view_blog")
 ]
 
 if settings.DEBUG: # serve media in dev environnement (don't use this in production)
