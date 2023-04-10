@@ -43,7 +43,8 @@ urlpatterns = [
     path('photo/upload/', blog.views.PhotoUploadPageView.as_view(), name="photo_upload"),
     path('blog/create/', blog.views.BlogAndPhotoUploadPageView.as_view(), name="blog_create"),
     path('blog/<int:blog_id>/', blog.views.view_blog, name="view_blog"),
-    path('blog/<int:blog_id>/edit/', blog.views.EditBlogPageView.as_view(), name="edit_blog")
+    path('blog/<int:blog_id>/edit/', blog.views.EditBlogPageView.as_view(), name="edit_blog"),
+    path('photo/upload-multiple/', blog.views.CreateMultiplePhotoPageView.as_view(), name="create_multiple_photos")
 ]
 
 if settings.DEBUG: # serve media in dev environnement (don't use this in production)

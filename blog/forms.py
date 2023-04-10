@@ -7,11 +7,11 @@ class PhotoForm(forms.ModelForm):
         fields = ('image', 'caption')
 
 class BlogForm(forms.ModelForm):
-    edit_blog = forms.BooleanField(widget=forms.HiddenInput, initial=True)
-    
+    edit_blog = forms.BooleanField(widget=forms.HiddenInput, initial=True) # add input type hidden to identify form
+
     class Meta:
         model = models.Blog
         fields = ('title', 'content')
 
 class DeleteBlogForm(forms.Form):
-    delete_blog = forms.BooleanField(widget=forms.HiddenInput, initial=True)
+    delete_blog = forms.BooleanField(widget=forms.HiddenInput, initial=True) # add input type hidden to identify form

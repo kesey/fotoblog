@@ -4,6 +4,7 @@ from blog import forms, models
 from django.conf import settings
 from django.contrib.auth.decorators import login_required # restrict access to authenticate users use it only with def view
 from django.contrib.auth.mixins import LoginRequiredMixin # restrict access to authenticate users use it only with class view
+from django.forms import formset_factory
 
 @login_required # restrict access to authenticate users in def view
 def home(request):
@@ -116,3 +117,32 @@ class EditBlogPageView(View, LoginRequiredMixin):
             self.template_name,
             context={"edit_form": edit_form, "delete_form": delete_form}
         )
+
+class CreateMultiplePhotoPageView(View, LoginRequiredMixin):
+    template_name = "blog/create_multiple_photos.html"
+    photo_form_class = formset_factory(forms.PhotoForm, extra=5)
+    
+    def get(self, request):
+        formset = self.photo_form_class()
+        return render(
+            request,
+            self.template_name,
+            context={"formset": formset}
+        )
+    
+    def post(self, request):
+        formset = self.photo_form_class(request.POST, request.FILES)
+        if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data:
+                    photo = form.save(commit=False)
+                    photo.uploader = request.user
+                    photo.save()
+            return redirect("home")
+        
+        return render(
+            request,
+            self.template_name,
+            context={"formset": formset}
+        )
+
