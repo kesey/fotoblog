@@ -80,3 +80,39 @@ def view_blog(request, blog_id):
         "blog/view_blog.html",
         context={"blog": blog}
     )
+
+class EditBlogPageView(View, LoginRequiredMixin):
+    template_name = "blog/edit_blog.html"
+    blog_form_class = forms.BlogForm
+    delete_blog_form_class = forms.DeleteBlogForm
+
+    def get(self, request, **kwargs): # use **kwargs to get url parameters
+        blog = get_object_or_404(models.Blog, id=kwargs["blog_id"])
+        edit_form = self.blog_form_class(instance=blog)
+        delete_form = self.delete_blog_form_class()
+        return render(
+            request,
+            self.template_name,
+            context={"edit_form": edit_form, "delete_form": delete_form}
+        )
+    
+    def post(self, request, **kwargs): # use **kwargs to get url parameters
+        blog = get_object_or_404(models.Blog, id=kwargs["blog_id"])
+        edit_form = self.blog_form_class(instance=blog)
+        delete_form = self.delete_blog_form_class()
+        if "edit_blog" in request.POST:
+            edit_form = self.blog_form_class(request.POST, instance=blog)
+            if edit_form.is_valid():
+                edit_form.save()
+                return redirect("home")
+        if "delete_blog" in request.POST:
+            delete_form = self.delete_blog_form_class(request.POST)
+            if delete_form.is_valid():
+                blog.delete()
+                return redirect("home")
+
+        return render(
+            request,
+            self.template_name,
+            context={"edit_form": edit_form, "delete_form": delete_form}
+        )
