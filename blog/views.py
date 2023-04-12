@@ -3,7 +3,7 @@ from django.views.generic import View
 from blog import forms, models
 from django.conf import settings
 from django.contrib.auth.decorators import login_required # restrict access to authenticate users use it only with def view
-from django.contrib.auth.mixins import LoginRequiredMixin # restrict access to authenticate users use it only with class view
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin # LoginRequiredMixin restrict access to authenticate users, use it only with class view # PermissionRequiredMixin restrict access to users with permissions
 from django.forms import formset_factory
 
 @login_required # restrict access to authenticate users in def view
@@ -16,7 +16,8 @@ def home(request):
         context={"photos": photos, "blogs": blogs}
     )
 
-class PhotoUploadPageView(View, LoginRequiredMixin): # LoginRequiredMixin restrict access to authenticate users in class view
+class PhotoUploadPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # LoginRequiredMixin restrict access to authenticate users in class view, have to be in first position
+    permission_required = ("blog.add_photo", ) # you can set multiple permissions with a tuple
     template_name = "blog/photo_upload.html"
     form_class = forms.PhotoForm
 
@@ -41,7 +42,7 @@ class PhotoUploadPageView(View, LoginRequiredMixin): # LoginRequiredMixin restri
             context={"form": form}
         )
 
-class BlogAndPhotoUploadPageView(View, LoginRequiredMixin):
+class BlogAndPhotoUploadPageView(LoginRequiredMixin, View): # mixin first (important)
     template_name = "blog/create_blog_post.html"
     blog_form_class = forms.BlogForm
     photo_form_class = forms.PhotoForm
@@ -82,7 +83,7 @@ def view_blog(request, blog_id):
         context={"blog": blog}
     )
 
-class EditBlogPageView(View, LoginRequiredMixin):
+class EditBlogPageView(LoginRequiredMixin, View): # mixin first (important)
     template_name = "blog/edit_blog.html"
     blog_form_class = forms.BlogForm
     delete_blog_form_class = forms.DeleteBlogForm
@@ -118,7 +119,7 @@ class EditBlogPageView(View, LoginRequiredMixin):
             context={"edit_form": edit_form, "delete_form": delete_form}
         )
 
-class CreateMultiplePhotoPageView(View, LoginRequiredMixin):
+class CreateMultiplePhotoPageView(LoginRequiredMixin, View): # mixin first (important)
     template_name = "blog/create_multiple_photos.html"
     photo_form_class = formset_factory(forms.PhotoForm, extra=5)
     
