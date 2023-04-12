@@ -42,7 +42,8 @@ class PhotoUploadPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # 
             context={"form": form}
         )
 
-class BlogAndPhotoUploadPageView(LoginRequiredMixin, View): # mixin first (important)
+class BlogAndPhotoUploadPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # mixin first (important)
+    permission_required = ("blog.add_photo", "blog.add_blog")
     template_name = "blog/create_blog_post.html"
     blog_form_class = forms.BlogForm
     photo_form_class = forms.PhotoForm
@@ -83,7 +84,8 @@ def view_blog(request, blog_id):
         context={"blog": blog}
     )
 
-class EditBlogPageView(LoginRequiredMixin, View): # mixin first (important)
+class EditBlogPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # mixin first (important)
+    permission_required = ("blog.change_blog", )
     template_name = "blog/edit_blog.html"
     blog_form_class = forms.BlogForm
     delete_blog_form_class = forms.DeleteBlogForm
@@ -119,7 +121,8 @@ class EditBlogPageView(LoginRequiredMixin, View): # mixin first (important)
             context={"edit_form": edit_form, "delete_form": delete_form}
         )
 
-class CreateMultiplePhotoPageView(LoginRequiredMixin, View): # mixin first (important)
+class CreateMultiplePhotoPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # mixin first (important)
+    permission_required = ("blog.add_photo")
     template_name = "blog/create_multiple_photos.html"
     photo_form_class = formset_factory(forms.PhotoForm, extra=5)
     

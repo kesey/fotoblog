@@ -6,7 +6,7 @@ from django.views.generic import View
 from authentication import forms
 from django.conf import settings
 
-class LoginPageView(View): # class LoginPageView(View, LoginRequiredMixin): restrict access to authenticate users in class view
+class LoginPageView(View): # class LoginPageView(LoginRequiredMixin, View): restrict access to authenticate users in class view
     template_name = "authentication/login.html"
     form_class = forms.LogInForm
 
@@ -66,7 +66,7 @@ class SignupPageView(View):
             context={"form": form}
         )
     
-class UploadProfilePhotoPageView(View, LoginRequiredMixin):
+class UploadProfilePhotoPageView(LoginRequiredMixin, View):
     template_name = "authentication/upload_profile_photo.html"
     form_class = forms.UploadProfilePhotoForm
 
