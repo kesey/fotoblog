@@ -10,6 +10,7 @@ from django.forms import formset_factory
 def home(request):
     photos = models.Photo.objects.all()
     blogs = models.Blog.objects.all()
+
     follows_ids = []
     for user in request.user.follows.all():
         follows_ids.append(user.id)
@@ -69,9 +70,9 @@ class BlogAndPhotoUploadPageView(LoginRequiredMixin, PermissionRequiredMixin, Vi
             photo.uploader = request.user
             photo.save()
             blog = blog_form.save(commit=False)
-            blog.author = request.user
             blog.photo = photo
-            blog.save()
+            blog.save() # You can save relations in the ManyToManyField ONCE the model has been saved in database.
+            blog.contributors.add(request.user, through_defaults={"contributions": "Auteur principal"})
             return redirect('home')
         return render(
             request,

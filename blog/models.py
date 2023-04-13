@@ -23,7 +23,8 @@ class Blog(models.Model):
     photo = models.ForeignKey(Photo, null=True, on_delete=models.SET_NULL, blank=True)
     title = models.CharField(max_length=128)
     content = models.CharField(max_length=5000)
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
+    contributors = models.ManyToManyField(settings.AUTH_USER_MODEL, through="BlogContributor", related_name="contributions") # without related_name there is a conflict between reverse accessor user.blog_set (to access every instance of Blog by this user)
     date_created = models.DateTimeField(auto_now=True)
     starred = models.BooleanField(default=False)
     word_count = models.IntegerField(null=True)
@@ -39,3 +40,11 @@ class Blog(models.Model):
         permissions = [
             ("change_blog_title", "Peut changer le titre d'un billet de blog")
         ]
+
+class BlogContributor(models.Model):
+    contributor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    blog = models.ForeignKey(Blog, on_delete=models.CASCADE)
+    contributions = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        unique_together = ("contributor", "blog") # ensure that there is only one instance of BlogContributor for each contributor - blog pair

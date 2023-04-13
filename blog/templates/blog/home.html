@@ -15,14 +15,20 @@
     <h2>Blog</h2>
     <div class="grid-container">
         {% for blog in blogs %}
-            {% if blog.author.id in follows_ids %}
-                <div class="post">
-                    <a href="{% url 'view_blog' blog.id %}">
-                        <h4>Billet: {{ blog.billet }}</h4>
-                        <img src="{{ blog.photo.image.url }}">
-                    </a>
-                </div>
-            {% endif %}
+            {% with continue=False %}
+                {% for contributor in blog.contributors.all %}
+                    {% if not continue and contributor.id in follows_ids %}
+                        <div class="post">
+                            <a href="{% url 'view_blog' blog.id %}">
+                                <h4>Billet: {{ blog.billet }}</h4>
+                                <img src="{{ blog.photo.image.url }}">
+                            </a>
+                        </div>
+                        {% with continue=True %}
+                        {% endwith %}
+                    {% endif %}
+                {% endfor %}
+            {% endwith %}
         {% endfor %}
     </div>
 {% endblock content %}
