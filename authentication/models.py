@@ -20,12 +20,18 @@ class User(AbstractUser):
     
     profile_photo = models.ImageField(verbose_name='Photo de profil')
     role = models.CharField(max_length=30, choices=ROLE_CHOICES, verbose_name='Rôle')
+    follows = models.ManyToManyField(
+        "self", # link to User Model
+        limit_choices_to={"role": CREATOR},
+        symmetrical=False, # require if the relation is on the same model, True if the relation is equivalent (like in a friend relationship)
+        verbose_name="suit"
+    )
 
-    def save(self, *args, **kwargs):
-        super().save(*args, **kwargs)
-        if self.role == self.CREATOR:
-            group = Group.objects.get(name='creators')
-            group.user_set.add(self)
-        elif self.role == self.SUBSCRIBER:
-            group = Group.objects.get(name='subscribers')
-            group.user_set.add(self)
+    # def save(self, *args, **kwargs): # this can be done in the admin back-end
+    #     super().save(*args, **kwargs)
+    #     if self.role == self.CREATOR:
+    #         group = Group.objects.get(name='creators')
+    #         group.user_set.add(self)
+    #     elif self.role == self.SUBSCRIBER:
+    #         group = Group.objects.get(name='subscribers')
+    #         group.user_set.add(self)

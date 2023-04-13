@@ -10,10 +10,14 @@ from django.forms import formset_factory
 def home(request):
     photos = models.Photo.objects.all()
     blogs = models.Blog.objects.all()
+    follows_ids = []
+    for user in request.user.follows.all():
+        follows_ids.append(user.id)
+
     return render(
         request,
         "blog/home.html",
-        context={"photos": photos, "blogs": blogs}
+        context={"photos": photos, "blogs": blogs, "follows_ids": follows_ids}
     )
 
 class PhotoUploadPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # LoginRequiredMixin restrict access to authenticate users in class view, have to be in first position
@@ -150,3 +154,26 @@ class CreateMultiplePhotoPageView(LoginRequiredMixin, PermissionRequiredMixin, V
             context={"formset": formset}
         )
 
+class FollowUserPageView(LoginRequiredMixin, View):
+    template_name = "blog/follow_user.html"
+    follow_user_form_class = forms.FollowUsersForm
+
+    def get(self, request):
+        form = self.follow_user_form_class(instance=request.user)
+        return render(
+            request,
+            self.template_name,
+            context={"form": form}
+        )
+    
+    def post(self, request):
+        form = self.follow_user_form_class(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect("home")
+        
+        return render(
+            request,
+            self.template_name,
+            context={"form": form}
+        )
