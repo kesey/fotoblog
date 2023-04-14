@@ -3,11 +3,12 @@
 
 {% block content %}
     <h2>Votre Flux</h2>
-    {% for instance in photos_and_blogs %}
+    {% for instance in page %}
         {% if instance|model_type == "Blog" %}
             {% include 'blog/partials/blog_snippet.html' with blog=instance %}
         {% elif instance|model_type == "Photo" %}
             {% include 'blog/partials/photo_snippet.html' with photo=instance %}
         {% endif %}
     {% endfor %}
+    {% include 'blog/partials/pagination_snippet.html' %}
 {% endblock content %}

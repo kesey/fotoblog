@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMix
 from django.forms import formset_factory
 from django.db.models import Q
 from itertools import chain
+from django.core.paginator import Paginator
 
 @login_required # restrict access to authenticate users in def view
 def home(request):
@@ -22,19 +23,28 @@ def home(request):
 
     photos_and_blogs = sorted(chain(blogs, photos), key= lambda instance: instance.date_created, reverse=True) # combine the two QuerySet and sort them by date of creation (begin with the most recent)
 
+    paginator = Paginator(photos_and_blogs, 6)
+    page_number = request.GET.get("page")
+    page = paginator.get_page(page_number)
+
     return render(
         request,
         "blog/home.html",
-        context={"photos": photos, "photos_and_blogs": photos_and_blogs}
+        context={"page": page}
     )
 
 @login_required
 def photo_feed(request):
     photos = models.Photo.objects.filter(uploader__in=request.user.follows.all()).order_by("-date_created")
+
+    paginator = Paginator(photos, 6)
+    page_number = request.GET.get("page")
+    page = paginator.get_page(page_number)
+
     return render(
         request,
         "blog/photo_feed.html",
-        context={"photos": photos}
+        context={"page": page}
     )
 
 class PhotoUploadPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # LoginRequiredMixin restrict access to authenticate users in class view, have to be in first position
