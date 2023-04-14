@@ -2,6 +2,14 @@ html {
     font-family: Arial;
 }
 
+a:link { text-decoration: none; }
+
+a:visited { text-decoration: none; }
+
+a:hover { text-decoration: none; }
+
+a:active { text-decoration: none; }
+
 /* The sidebar menu */
 .sidebar {
     height: 100%; /* Full-height: remove this if you want "auto" height */
@@ -52,7 +60,18 @@ html {
     text-align: center;
 }
 
+.post{
+    display: inline-block;
+    margin: 40px;
+}
+
 .post img {
-    width: 80%;
+    max-width: 380px;
+    max-height: 300px;
     border-radius: 5px;
+    margin: auto;
+}
+
+.pagination{
+    display: block;
 }
