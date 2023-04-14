@@ -30,7 +30,7 @@ def home(request):
 
 @login_required
 def photo_feed(request):
-    photos = models.Photo.objects.filter(uploader=request.user.follows.all()).order_by("-date_created")
+    photos = models.Photo.objects.filter(uploader__in=request.user.follows.all()).order_by("-date_created")
     return render(
         request,
         "blog/photo_feed.html",

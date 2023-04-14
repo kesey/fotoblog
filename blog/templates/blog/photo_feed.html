@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% load blog_extras %}
+
+{% block content %}
+    <h2>Votre Flux de Photos</h2>
+    {% for photo in photos %}
+        {% include 'blog/partials/photo_snippet.html' %}
+    {% endfor %}
+{% endblock content %}
