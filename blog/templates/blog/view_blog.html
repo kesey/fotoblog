@@ -2,7 +2,7 @@
 
 {% block content %}
     <h2>{{ blog.title }}</h2>
-    {% if perms.blog.change_blog %}
+    {% if perms.blog.change_blog and request.user in blog.contributors.all %}
         <p><a href="{% url 'edit_blog' blog.id %}">Modifier le billet</a></p>
     {% endif %}
     <img src="{{ blog.photo.image.url }}">
