@@ -5,20 +5,36 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required # restrict access to authenticate users use it only with def view
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin # LoginRequiredMixin restrict access to authenticate users, use it only with class view # PermissionRequiredMixin restrict access to users with permissions
 from django.forms import formset_factory
+from django.db.models import Q
+from itertools import chain
 
 @login_required # restrict access to authenticate users in def view
 def home(request):
-    photos = models.Photo.objects.all()
-    blogs = models.Blog.objects.all()
+    blogs = models.Blog.objects.filter(
+        Q(contributors__in=request.user.follows.all()) | # get blogs whose contributors are followed by the user or starred
+        Q(starred=True) # with Q you can add logic operand or: | and: & not: ~ to combine conditions
+    )
+    photos = models.Photo.objects.filter(
+        uploader__in=request.user.follows.all() # get photos whose author are followed by the user
+    ).exclude(
+        blog__in=blogs # but not already display in blog list
+    )
 
-    follows_ids = []
-    for user in request.user.follows.all():
-        follows_ids.append(user.id)
+    photos_and_blogs = sorted(chain(blogs, photos), key= lambda instance: instance.date_created, reverse=True) # combine the two QuerySet and sort them by date of creation (begin with the most recent)
 
     return render(
         request,
         "blog/home.html",
-        context={"photos": photos, "blogs": blogs, "follows_ids": follows_ids}
+        context={"photos": photos, "photos_and_blogs": photos_and_blogs}
+    )
+
+@login_required
+def photo_feed(request):
+    photos = models.Photo.objects.filter(uploader=request.user.follows.all()).order_by("-date_created")
+    return render(
+        request,
+        "blog/photo_feed.html",
+        context={"photos": photos}
     )
 
 class PhotoUploadPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # LoginRequiredMixin restrict access to authenticate users in class view, have to be in first position
