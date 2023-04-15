@@ -3,9 +3,14 @@ from blog import models
 from django.contrib.auth import get_user_model
 
 class PhotoForm(forms.ModelForm):
+    edit_photo = forms.BooleanField(widget=forms.HiddenInput, initial=True) # add input type hidden to identify form
+
     class Meta:
         model = models.Photo
         fields = ('image', 'caption')
+
+class DeletePhotoForm(forms.Form):
+    delete_photo = forms.BooleanField(widget=forms.HiddenInput, initial=True) # add input type hidden to identify form
 
 class BlogForm(forms.ModelForm):
     edit_blog = forms.BooleanField(widget=forms.HiddenInput, initial=True) # add input type hidden to identify form

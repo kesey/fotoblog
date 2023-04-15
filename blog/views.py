@@ -115,6 +115,15 @@ def view_blog(request, blog_id):
         context={"blog": blog}
     )
 
+@login_required
+def view_photo(request, photo_id):
+    photo = get_object_or_404(models.Photo, id=photo_id)
+    return render(
+        request,
+        "blog/view_photo.html",
+        context={"photo": photo}
+    )
+
 class EditBlogPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # mixin first (important)
     permission_required = ("blog.change_blog", )
     template_name = "blog/edit_blog.html"
@@ -144,6 +153,44 @@ class EditBlogPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # mix
             delete_form = self.delete_blog_form_class(request.POST)
             if delete_form.is_valid():
                 blog.delete()
+                return redirect("home")
+
+        return render(
+            request,
+            self.template_name,
+            context={"edit_form": edit_form, "delete_form": delete_form}
+        )
+
+class EditPhotoPageView(LoginRequiredMixin, PermissionRequiredMixin, View): # mixin first (important)
+    permission_required = ("blog.change_photo", )
+    template_name = "blog/edit_photo.html"
+    photo_form_class = forms.PhotoForm
+    delete_photo_form_class = forms.DeletePhotoForm
+
+    def get(self, request, **kwargs): # use **kwargs to get url parameters
+        photo = get_object_or_404(models.Photo, id=kwargs["photo_id"])
+        edit_form = self.photo_form_class(instance=photo)
+        delete_form = self.delete_photo_form_class()
+        return render(
+            request,
+            self.template_name,
+            context={"edit_form": edit_form, "delete_form": delete_form}
+        )
+    
+    def post(self, request, **kwargs): # use **kwargs to get url parameters
+        photo = get_object_or_404(models.Photo, id=kwargs["photo_id"])
+        edit_form = self.photo_form_class(instance=photo)
+        delete_form = self.delete_photo_form_class()
+        if "edit_photo" in request.POST:
+            edit_form = self.photo_form_class(request.POST, request.FILES, instance=photo)
+            # breakpoint() # usefull for debugging
+            if edit_form.is_valid():
+                edit_form.save()
+                return redirect("home")
+        if "delete_photo" in request.POST:
+            delete_form = self.delete_photo_form_class(request.POST)
+            if delete_form.is_valid():
+                photo.delete()
                 return redirect("home")
 
         return render(

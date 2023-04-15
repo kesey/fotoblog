@@ -1,7 +1,9 @@
 {% load blog_extras %}
 <div class="post">
-    <img src="{{ photo.image.url }}">
-    <p>{{ photo.caption }}</p>
-    <p><strong>uploader par : {% get_poster_display photo.uploader %}</strong></p>
-    <p>{{ photo.date_created|get_posted_at_display }}</p>
+    <a href="{% url 'view_photo' photo.id %}">
+        <img src="{{ photo.image.url }}">
+        <p>{{ photo.caption }}</p>
+        <p><strong>Uploader par : {% get_poster_display photo.uploader %}</strong></p>
+        <p>{{ photo.date_created|get_posted_at_display }}</p>
+    </a>
 </div>
